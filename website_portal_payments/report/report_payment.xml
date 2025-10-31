@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Action that tells Odoo this is a report for account.payment -->
+    <record id="action_report_custom_payment_receipt" model="ir.actions.report">
+      <field name="name">Payment Receipt</field>
+      <field name="model">account.payment</field>
+      <field name="report_type">qweb-pdf</field>
+      <!-- technical name of the template below -->
+      <field name="report_name">website_portal_payments.report_payment_receipt</field>
+      <field name="report_file">website_portal_payments.report_payment_receipt</field>
+      <field name="binding_model_id" ref="account.model_account_payment"/>
+      <field name="binding_type">report</field>
+      <!-- optional: set default filename -->
+      <field name="print_report_name">'Payment Receipt - %s' % (object.name)</field>
+    </record>
+
+    <!-- The QWeb template itself -->
+    <template id="report_payment_receipt">
+      <t t-call="web.external_layout">
+        <t t-call="web.html_container">
+          <div class="page">
+            <t t-foreach="docs" t-as="doc">
+              <div class="oe_structure"/>
+              <div class="row mb32">
+                <div class="col-12 text-center">
+                  <h3>
+                    Payment Receipt <t t-esc="doc.name"/>
+                  </h3>
+                </div>
+              </div>
+
+              <table class="table table-sm table-borderless">
+                <tr>
+                  <td><strong>Customer</strong></td>
+                  <td><span t-field="doc.partner_id.name"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Date</strong></td>
+                  <td><span t-field="doc.date"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Journal</strong></td>
+                  <td><span t-field="doc.journal_id.name"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Payment Method</strong></td>
+                  <td><span t-field="doc.payment_method_line_id.name"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Amount</strong></td>
+                  <td>
+                    <span t-field="doc.amount"
+                          t-field-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Memo</strong></td>
+                  <td><span t-field="doc.memo"/></td>
+                </tr>
+                <tr>
+                  <td><strong>Company</strong></td>
+                  <td><span t-field="doc.company_id.name"/></td>
+                </tr>
+              </table>
+
+              <!-- optional page break for multiple docs -->
+              <div style="page-break-after:always;"/>
+            </t>
+          </div>
+        </t>
+      </t>
+    </template>
+
+  </data>
+</odoo>

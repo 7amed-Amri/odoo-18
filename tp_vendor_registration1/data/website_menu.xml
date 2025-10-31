@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Website Menu for Vendor Registration -->
+    <record id="website_menu_vendor_registration" model="website.menu">
+        <field name="name">Vendor Registration</field>
+        <field name="url">/vendor-registration</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">50</field>
+    </record>
+    
+</odoo>

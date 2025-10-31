@@ -1,0 +1,21 @@
+<odoo>
+    <record id="view_employee_sheet_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.sheet</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add fields at the bottom of the form -->
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Custom Data" groups="employee_sheet.group_employee_sheet_user">
+                    <group>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <field name="total_days"/>
+                        <field name="custom_char"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

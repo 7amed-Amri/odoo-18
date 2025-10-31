@@ -1,0 +1,195 @@
+<odoo>
+
+    <template id="portal_payments" inherit_id="portal.portal_my_home" 
+    name="Website Portal Sale" priority="31">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/website_portal_payments/static/img/payment.svg'"/>
+                <t t-set="title">Your Payment Receipts</t>
+                <t t-set="url" t-value="'/my/custom_payments'"/>
+                <t t-set="text">You can see and print your payments</t>
+                <t t-set="placeholder_count" t-value="'custom_payment_count'"/>
+                <span t-att-id="custom_payment_count" t-esc="custom_payment_count"/>
+            </t>
+      </xpath>
+    </template>
+
+    <template id="portal_payment_my_home_menu_sale" name="Portal layout : sales menu entries" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+           
+             <li t-if="page_name == 'payment' or payment" t-attf-class="breadcrumb-item #{'active ' if not payment else ''}">
+                <a t-if="payment" t-attf-href="/my/custom_payments">Payment Receipts</a>
+                <t t-else="">Payment Receipts</t>
+            </li>
+            <li t-if="payment" class="breadcrumb-item active">
+                <t t-out="payment['reference']"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_payments" name="My Payments">
+      <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+        <t t-call="portal.portal_searchbar">
+            <t t-set="title">Payment Receipts</t>
+            <t t-set="searchbar_inputs" t-value="searchbar_inputs"/>
+            <t t-set="search_in" t-value="search_in"/>
+            <t t-set="search" t-value="search"/>
+            <t t-set="filterby" t-value="filterby"/>
+            <t t-set="groupby" t-value="groupby"/>
+            <t t-set="sortby" t-value="sortby"/>
+        </t>
+        
+        <!-- CSS for state colors -->
+        <style>
+            .state-draft {
+                color: #6c757d;
+                font-weight: bold;
+            }
+            .state-in_process {
+                color: #ffc107;
+                font-weight: bold;
+            }
+            .state-paid {
+                color: #28a745;
+                font-weight: bold;
+            }
+            .state-canceled {
+                color: #dc3545;
+                font-weight: bold;
+            }
+            .state-rejected {
+                color: #fd7e14;
+                font-weight: bold;
+            }
+            .group-header {
+                background-color: #f8f9fa;
+                border-left: 4px solid #007bff;
+                font-weight: bold;
+                padding: 10px 15px;
+                margin: 20px 0 10px 0;
+            }
+        </style>
+        
+        <t t-if="not payments">
+            <div class="alert alert-info" role="alert">
+                <p class="mb-0">There are currently no payment receipts for your account.</p>
+            </div>
+        </t>
+        
+        <t t-if="payments">
+            <div class="table-responsive">
+                <!-- Handle grouped view -->
+                <t t-if="groupby != 'none' and grouped_payments">
+                    <t t-foreach="grouped_payments" t-as="group">
+                        <div class="group-header">
+                            <h5 class="mb-0">
+                                <t t-if="groupby == 'journal'">Journal: </t>
+                                <t t-elif="groupby == 'payment_method'">Payment Method: </t>
+                                <t t-elif="groupby == 'state'">State: </t>
+                                <strong><t t-esc="group[0]"/></strong>
+                                <span class="badge bg-secondary ms-2"><t t-esc="len(group[1])"/></span>
+                            </h5>
+                        </div>
+                        
+                        <table class="table table-hover o_my_status_table mb-4">
+                            <thead class="table-light">
+                              <tr>
+                                <th>Ref. Number #</th>
+                                <th>Memo</th>
+                                <th>Journal</th>
+                                <th>Date</th>
+                                <th>State</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-center">Print</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="group[1]" t-as="payment">
+                                    <tr>
+                                        <td>
+                                            <span t-field="payment.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="payment.memo"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="payment.journal_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="payment.date"/>
+                                        </td>
+                                        <td>
+                                            <span t-attf-class="state-#{payment.state}" t-field="payment.state"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-field="payment.amount" t-options='{"widget": "monetary", "display_currency": payment.currency_id}'/>
+                                        </td>
+                                        <td class="text-center">
+                                            <a class="btn btn-sm btn-primary" t-attf-href="/custom_payment/printpayment/{{slug(payment)}}" target="_blank">
+                                                      <i class="fa fa-print"></i> Print Receipt
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+                
+                <!-- Handle non-grouped view -->
+                <t t-else="">
+                    <table class="table table-hover o_my_status_table">
+                        <thead class="table-light">
+                          <tr>
+                            <th>Ref. Number #</th>
+                            <th>Memo</th>
+                            <th>Journal</th>
+                            <th>Date</th>
+                            <th>State</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-center">Print</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="payments" t-as="payment">
+                                <tr>
+                                    <td>
+                                        <span t-field="payment.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="payment.memo"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="payment.journal_id"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="payment.date"/>
+                                    </td>
+                                    <td>
+                                        <span t-attf-class="state-#{payment.state}" t-field="payment.state"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="payment.amount" t-options='{"widget": "monetary", "display_currency": payment.currency_id}'/>
+                                    </td>
+                                    <td class="text-center">
+                                        <a class="btn btn-sm btn-primary" t-attf-href="/custom_payment/printpayment/{{slug(payment)}}" target="_blank">
+                                                  <i class="fa fa-print"></i> Print Receipt
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </t>
+        
+        <div t-if="pager" class="o_portal_pager text-center">
+            <t t-call="portal.pager"/>
+        </div>
+      </t>
+    </template>
+
+</odoo>

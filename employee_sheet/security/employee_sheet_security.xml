@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_employee_sheet_user" model="res.groups">
+        <field name="name">Employee Sheet User</field>
+        <field name="category_id" ref="base.module_category_hr"/>
+    </record>
+</odoo>

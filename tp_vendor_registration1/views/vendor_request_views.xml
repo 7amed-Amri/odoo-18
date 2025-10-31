@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Tree View -->
+    <record id="view_vendor_request_tree" model="ir.ui.view">
+        <field name="name">vendor.request.tree</field>
+        <field name="model">vendor.request</field>
+        <field name="arch" type="xml">
+            <list string="Vendor Requests" decoration-info="status=='draft'" 
+                  decoration-warning="status=='submitted'" decoration-success="status=='approved'" 
+                  decoration-danger="status=='rejected'">
+                <field name="create_date" string="Date"/>
+                <field name="name"/>
+                <field name="company_name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="department"/>
+                <field name="status" widget="badge"/>
+                <field name="partner_id"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="view_vendor_request_form" model="ir.ui.view">
+        <field name="name">vendor.request.form</field>
+        <field name="model">vendor.request</field>
+        <field name="arch" type="xml">
+            <form string="Vendor Request">
+                <header>
+                    <button name="action_submit" string="Submit" type="object" 
+                            class="oe_highlight" invisible="status != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object" 
+                            class="oe_highlight" invisible="status != 'submitted'"
+                            groups="purchase.group_purchase_manager"/>
+                    <button name="action_reject" string="Reject" type="object" 
+                            invisible="status != 'submitted'"
+                            groups="purchase.group_purchase_manager"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" 
+                            invisible="status == 'draft'"
+                            groups="purchase.group_purchase_manager"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,submitted,approved,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_partner" type="object" 
+                                class="oe_stat_button" icon="fa-user" 
+                                invisible="partner_count == 0">
+                            <field name="partner_count" widget="statinfo" string="Partner"/>
+                        </button>
+                    </div>
+                    
+                    <group>
+                        <group name="contact_info" string="Contact Information">
+                            <field name="name" placeholder="Contact Person Name"/>
+                            <field name="email" widget="email" placeholder="email@example.com"/>
+                            <field name="phone" widget="phone" placeholder="+1 234 567 8900"/>
+                        </group>
+                        <group name="company_info" string="Company Information">
+                            <field name="company_name" placeholder="Company Name"/>
+                            <field name="business_type"/>
+                            <field name="website" widget="url" placeholder="https://example.com"/>
+                            <field name="tax_id" placeholder="Tax/VAT ID"/>
+                        </group>
+                    </group>
+                    
+                    <group name="address_info" string="Address Information">
+                        <group>
+                            <field name="street" placeholder="Street Address"/>
+                            <field name="city" placeholder="City"/>
+                        </group>
+                        <group>
+                            <field name="zip" placeholder="ZIP Code"/>
+                            <field name="country_id" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                    </group>
+                    
+                    <group name="department_info" string="Department Information">
+                        <group>
+                            <field name="department"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" readonly="1" invisible="not partner_id"/>
+                        </group>
+                    </group>
+                    
+                    <group name="department_notes" string="Additional Information" invisible="not department_notes">
+                        <field name="department_notes" nolabel="1" placeholder="Additional notes..."/>
+                    </group>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Kanban View -->
+    <record id="view_vendor_request_kanban" model="ir.ui.view">
+        <field name="name">vendor.request.kanban</field>
+        <field name="model">vendor.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="company_name"/>
+                <field name="email"/>
+                <field name="status"/>
+                <field name="department"/>
+                <field name="create_date"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_content">
+                                <div class="o_kanban_record_title">
+                                    <strong><field name="company_name"/></strong>
+                                </div>
+                                <div class="o_kanban_record_subtitle">
+                                    <i class="fa fa-user"/> <field name="name"/>
+                                </div>
+                                <div class="o_kanban_record_subtitle">
+                                    <i class="fa fa-envelope"/> <field name="email"/>
+                                </div>
+                                <div class="o_kanban_record_subtitle" t-if="record.department.raw_value">
+                                    <i class="fa fa-building"/> <field name="department"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="create_date" widget="date"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="status" widget="badge"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_vendor_request_search" model="ir.ui.view">
+        <field name="name">vendor.request.search</field>
+        <field name="model">vendor.request</field>
+        <field name="arch" type="xml">
+            <search string="Vendor Requests">
+                <field name="name" string="Contact Name"/>
+                <field name="company_name" string="Company"/>
+                <field name="email"/>
+                <field name="department"/>
+                <field name="status"/>
+                
+                <filter string="Draft" name="filter_draft" domain="[('status', '=', 'draft')]"/>
+                <filter string="Submitted" name="filter_submitted" domain="[('status', '=', 'submitted')]"/>
+                <filter string="Approved" name="filter_approved" domain="[('status', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected" domain="[('status', '=', 'rejected')]"/>
+                
+                <separator/>
+                <filter string="This Month" name="filter_this_month" 
+                        domain="[('create_date', '>=', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string="Department" name="group_department" domain="[]" context="{'group_by': 'department'}"/>
+                    <filter string="Country" name="group_country" domain="[]" context="{'group_by': 'country_id'}"/>
+                    <filter string="Creation Date" name="group_create_date" domain="[]" context="{'group_by': 'create_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_vendor_request" model="ir.actions.act_window">
+        <field name="name">Vendor Requests</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vendor.request</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_filter_submitted': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No vendor requests found. Create one!
+            </p>
+            <p>
+                Vendor requests allow potential suppliers to register through your website.
+                You can review and approve them to create new vendor partners.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Menu Items -->
+    <menuitem id="menu_vendor_request_root" name="Vendor Requests" 
+              parent="purchase.menu_purchase_root" sequence="10"/>
+    
+    <menuitem id="menu_vendor_request" name="Vendor Requests" 
+              parent="menu_vendor_request_root" sequence="1"
+              action="action_vendor_request"/>
+    
+</odoo>

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vendor Registration Form Template -->
+    <template id="vendor_registration_form" name="Vendor Registration Form">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container mt-4">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h2 class="mb-0">
+                                        <i class="fa fa-handshake-o mr-2"/>
+                                        Vendor Registration
+                                    </h2>
+                                    <p class="mb-0">Register your company as a potential vendor</p>
+                                </div>
+                                <div class="card-body">
+                                    
+                                    <!-- Error Messages -->
+                                    <t t-if="error_message and len(error_message) > 0">
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            <h6 class="alert-heading">
+                                                <i class="fa fa-exclamation-triangle mr-2"/>
+                                                Please correct the following errors:
+                                            </h6>
+                                            <ul class="mb-0">
+                                                <li t-foreach="error_message" t-as="err_msg" t-esc="err_msg"/>
+                                            </ul>
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&amp;times;</span>
+                                            </button>
+                                        </div>
+                                    </t>
+                                    
+                                    <form action="/vendor-registration/submit" method="post" class="needs-validation" novalidate="novalidate">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        
+                                        <!-- Contact Information -->
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-user mr-2"/>Contact Information
+                                                </h5>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="name" class="font-weight-bold">
+                                                    Contact Person 
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" name="name" id="name" 
+                                                       t-att-value="name or ''" 
+                                                       required="required"
+                                                       placeholder="Enter contact person name"
+                                                       t-attf-class="form-control #{error and error.get('name') and 'is-invalid' or ''}"/>
+                                                <t t-if="error and error.get('name')">
+                                                    <div class="invalid-feedback d-block">
+                                                        <i class="fa fa-exclamation-circle mr-1"/>
+                                                        Contact person name is required.
+                                                    </div>
+                                                </t>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="email" class="font-weight-bold">
+                                                    Email Address 
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="email" name="email" id="email" 
+                                                       t-att-value="email or ''" 
+                                                       required="required"
+                                                       placeholder="name@company.com"
+                                                       t-attf-class="form-control #{error and error.get('email') and 'is-invalid' or ''}"/>
+                                                <t t-if="error and error.get('email')">
+                                                    <div class="invalid-feedback d-block">
+                                                        <i class="fa fa-exclamation-circle mr-1"/>
+                                                        <span t-if="error.get('email') == 'missing'">Email address is required.</span>
+                                                        <span t-if="error.get('email') == 'invalid'">Please enter a valid email address.</span>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="phone" class="font-weight-bold">Phone Number</label>
+                                                <input type="tel" class="form-control" name="phone" id="phone" 
+                                                       t-att-value="phone or ''"
+                                                       placeholder="+1 234 567 8900"/>
+                                                <small class="form-text text-muted">Optional</small>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="company_name" class="font-weight-bold">
+                                                    Company Name 
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" name="company_name" id="company_name" 
+                                                       t-att-value="company_name or ''" 
+                                                       required="required"
+                                                       placeholder="Enter your company name"
+                                                       t-attf-class="form-control #{error and error.get('company_name') and 'is-invalid' or ''}"/>
+                                                <t t-if="error and error.get('company_name')">
+                                                    <div class="invalid-feedback d-block">
+                                                        <i class="fa fa-exclamation-circle mr-1"/>
+                                                        Company name is required.
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Company Information -->
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-building mr-2"/>Company Information
+                                                </h5>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="business_type" class="font-weight-bold">Business Type</label>
+                                                <select class="form-control" name="business_type" id="business_type">
+                                                    <option value="company" t-att-selected="'selected' if business_type == 'company' else None">Company</option>
+                                                    <option value="individual" t-att-selected="'selected' if business_type == 'individual' else None">Individual</option>
+                                                    <option value="partnership" t-att-selected="'selected' if business_type == 'partnership' else None">Partnership</option>
+                                                    <option value="corporation" t-att-selected="'selected' if business_type == 'corporation' else None">Corporation</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="website" class="font-weight-bold">Website</label>
+                                                <input type="url" class="form-control" name="website" id="website" 
+                                                       value="" placeholder="https://example.com"/>
+                                                <small class="form-text text-muted">Optional - Company website URL</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-6">
+                                                <label for="tax_id" class="font-weight-bold">Tax/VAT ID</label>
+                                                <input type="text" class="form-control" name="tax_id" id="tax_id" 
+                                                       t-att-value="tax_id or ''"
+                                                       placeholder="Enter tax or VAT ID"/>
+                                                <small class="form-text text-muted">Optional</small>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="department" class="font-weight-bold">Related Department</label>
+                                                <select class="form-control" name="department" id="department">
+                                                    <option value="">Select Department</option>
+                                                    <option value="procurement" t-att-selected="'selected' if department == 'procurement' else None">Procurement</option>
+                                                    <option value="it" t-att-selected="'selected' if department == 'it' else None">IT</option>
+                                                    <option value="marketing" t-att-selected="'selected' if department == 'marketing' else None">Marketing</option>
+                                                    <option value="operations" t-att-selected="'selected' if department == 'operations' else None">Operations</option>
+                                                    <option value="finance" t-att-selected="'selected' if department == 'finance' else None">Finance</option>
+                                                    <option value="hr" t-att-selected="'selected' if department == 'hr' else None">Human Resources</option>
+                                                    <option value="other" t-att-selected="'selected' if department == 'other' else None">Other</option>
+                                                </select>
+                                                <small class="form-text text-muted">Optional - Which department would work with your company</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Address Information -->
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-map-marker mr-2"/>Address Information
+                                                </h5>
+                                                <p class="text-muted small">All address fields are optional</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-12">
+                                                <label for="street" class="font-weight-bold">Street Address</label>
+                                                <input type="text" class="form-control" name="street" id="street" 
+                                                       t-att-value="street or ''"
+                                                       placeholder="Enter street address"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-4">
+                                                <label for="city" class="font-weight-bold">City</label>
+                                                <input type="text" class="form-control" name="city" id="city" 
+                                                       t-att-value="city or ''"
+                                                       placeholder="Enter city"/>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="zip" class="font-weight-bold">ZIP Code</label>
+                                                <input type="text" class="form-control" name="zip" id="zip" 
+                                                       value=""
+                                                       placeholder="Enter ZIP code"/>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="country_id" class="font-weight-bold">Country</label>
+                                                <select class="form-control" name="country_id" id="country_id">
+                                                    <option value="">Select Country</option>
+                                                    <t t-foreach="countries" t-as="country">
+                                                        <option t-att-value="country.id" 
+                                                                t-att-selected="'selected' if country_id and str(country_id) == str(country.id) else None"
+                                                                t-esc="country.name"/>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Additional Information -->
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <h5 class="text-primary border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-info-circle mr-2"/>Additional Information
+                                                </h5>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-md-12">
+                                                <label for="department_notes" class="font-weight-bold">Additional Notes</label>
+                                                <textarea class="form-control" name="department_notes" id="department_notes" 
+                                                          rows="4" 
+                                                          placeholder="Please provide any additional information about your company, services, or specific requirements..."
+                                                          t-esc="department_notes or ''"></textarea>
+                                                <small class="form-text text-muted">Optional - Tell us more about your business</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Submit Button -->
+                                        <div class="row mt-4">
+                                            <div class="col-12">
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                                                        <i class="fa fa-paper-plane mr-2"/>
+                                                        Submit Registration
+                                                    </button>
+                                                    <div class="mt-3">
+                                                        <small class="text-muted">
+                                                            <i class="fa fa-shield mr-1"/>
+                                                            Your information is secure and will only be used for vendor registration purposes.
+                                                        </small>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <small class="text-info">
+                                                            <i class="fa fa-clock-o mr-1"/>
+                                                            Your registration will be reviewed by our procurement team within 3-5 business days.
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    
+    <!-- Thank You Page Template -->
+    <template id="vendor_registration_thanks" name="Vendor Registration Thank You">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white text-center">
+                                    <h2 class="mb-0">
+                                        <i class="fa fa-check-circle mr-2"/>
+                                        Registration Successful!
+                                    </h2>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="mb-4">
+                                        <i class="fa fa-handshake-o text-success" style="font-size: 4rem;"/>
+                                    </div>
+                                    
+                                    <h4 class="text-success mb-3">
+                                        Thank you, <span t-esc="vendor_request.company_name"/>!
+                                    </h4>
+                                    
+                                    <p class="lead mb-4">
+                                        Your vendor registration request has been successfully submitted.
+                                    </p>
+                                    
+                                    <div class="alert alert-info">
+                                        <h6><i class="fa fa-info-circle mr-2"/>What's Next?</h6>
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fa fa-clock-o mr-2"/>Our procurement team will review your application</li>
+                                            <li><i class="fa fa-envelope mr-2"/>You will receive an email notification once your registration is approved</li>
+                                            <li><i class="fa fa-calendar mr-2"/>The review process typically takes 3-5 business days</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="row mt-4">
+                                        <div class="col-md-6 mb-3">
+                                            <a href="/vendor-registration" class="btn btn-outline-primary btn-block">
+                                                <i class="fa fa-plus mr-2"/>
+                                                Register Another Vendor
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <a href="/" class="btn btn-primary btn-block">
+                                                <i class="fa fa-home mr-2"/>
+                                                Return to Homepage
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 pt-4 border-top">
+                                        <h6 class="text-muted">Registration Details</h6>
+                                        <div class="row text-left">
+                                            <div class="col-md-6">
+                                                <strong>Contact Person:</strong> <span t-esc="vendor_request.name"/>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Email:</strong> <span t-esc="vendor_request.email"/>
+                                            </div>
+                                            <div class="col-md-6 mt-2">
+                                                <strong>Company:</strong> <span t-esc="vendor_request.company_name"/>
+                                            </div>
+                                            <div class="col-md-6 mt-2">
+                                                <strong>Department:</strong> 
+                                                <span t-if="vendor_request.department" t-esc="dict(vendor_request._fields['department'].selection).get(vendor_request.department, vendor_request.department)"/>
+                                                <span t-else="">Not specified</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+</odoo>

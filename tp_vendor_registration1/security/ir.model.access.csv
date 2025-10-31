@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vendor_request_manager,vendor.request.manager,model_vendor_request,purchase.group_purchase_manager,1,1,1,1
+access_vendor_request_user,vendor.request.user,model_vendor_request,purchase.group_purchase_user,1,1,1,0
+access_vendor_request_public,vendor.request.public,model_vendor_request,,1,0,1,0

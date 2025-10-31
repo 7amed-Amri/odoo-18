@@ -1,0 +1,31 @@
+<odoo>
+    <record id="view_hr_employee_form_inherit_sheet" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.sheet</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+
+
+             <!-- Header button -->
+            <xpath expr="//form/header" position="inside">
+                <button name="action_open_contacts"
+                        type="object"
+                        string="Contacts With me"
+                        class="btn-primary"
+                        icon="fa-external-link"/>
+            </xpath>
+            <!-- Add inside the personal_information page -->
+            <xpath expr="//notebook" position="inside">
+                <page string = "Hamed RT" >
+                    <group string="Employee Sheet">
+                        <label for="sheet_code" string="Sheet Code"/>
+                        <field name="sheet_code" placeholder="Enter sheet code"/>
+                        <label for="sheet_notes" string="Notes"/>
+                        <field name="sheet_notes" placeholder="Enter notes here"/>
+                     </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

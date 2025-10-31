@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit Purchase Order Form View -->
+    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_vendor_requests" type="object" 
+                        class="oe_stat_button" icon="fa-handshake-o" 
+                        invisible="vendor_request_count == 0">
+                    <field name="vendor_request_count" widget="statinfo" string="Vendor Requests"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,53 @@
+<odoo>
+    <!-- Form view -->
+    <record id="view_support_ticket_form" model="ir.ui.view">
+        <field name="name">support.ticket.form</field>
+        <field name="model">support.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Support Ticket">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="description"/>
+                        <field name="status"/>
+                        <field name="user_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_approve" type="object" string="Approve" class="btn btn-success"/>
+                        <button name="action_reject" type="object" string="Reject" class="btn btn-danger"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- List view -->
+    <record id="view_support_ticket_list" model="ir.ui.view">
+        <field name="name">support.ticket.list</field>
+        <field name="model">support.ticket</field>
+        <field name="arch" type="xml">
+            <list string="Support Tickets">
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="description"/>
+                <field name="status"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_support_ticket" model="ir.actions.act_window">
+        <field name="name">Support Tickets</field>
+        <field name="res_model">support.ticket</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="support_ticket_root" name="Support Tickets"/>
+    <menuitem id="support_ticket_menu" name="Tickets"
+              parent="support_ticket_root" action="action_support_ticket"/>
+</odoo>
